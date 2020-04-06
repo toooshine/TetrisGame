@@ -6,7 +6,7 @@ import './App.css';
 class App extends Component {
 	state = {
 		grid: null,
-		gridHeight: 10,
+		gridHeight: 15,
 		gridWidth: 8,
 		piece: null,
 		nbrCleanLine: 0,
@@ -15,29 +15,54 @@ class App extends Component {
 
 	componentDidMount() {
 		this.initGame();
-
+		let key_pressed = [];
+		let multiple_keys_pressed = false;
 		window.addEventListener('keyup', (e) => {
-			switch (e.keyCode) {
-				case 39:
-					this.pieceMoveToAxis(1);
-					break;
-				case 37:
-					this.pieceMoveToAxis(-1);
-					break;
-				case 40:
-					this.pieceMoveToYAxis(1);
-					break;
-				case 88:
-					this.rotatePiece('right');
-					break;
-				case 89:
-					this.rotatePiece('left');
-					break;
-				default:
-					break;
+			multiple_keys_pressed = false;
+			let index = key_pressed.indexOf(e.keyCode);
+			if (index !== -1) {
+				key_pressed.splice(index, 1);
+			}
+		});
+		window.addEventListener('keydown', (e) => {
+			if (key_pressed.indexOf(e.keyCode) === -1) {
+				key_pressed.push(e.keyCode);
+			}
+			if (key_pressed.length > 1) {
+				key_pressed.forEach((keyCode, index) => {
+					if (multiple_keys_pressed === false && index === 0) {
+						multiple_keys_pressed = true;
+					} else {
+						this.executeKeyCode(keyCode);
+					}
+				});
+			} else {
+				this.executeKeyCode(key_pressed[0]);
 			}
 		});
 	}
+
+	executeKeyCode = (keyCode) => {
+		switch (keyCode) {
+			case 39:
+				this.pieceMoveToAxis(1);
+				break;
+			case 37:
+				this.pieceMoveToAxis(-1);
+				break;
+			case 40:
+				this.pieceMoveToYAxis(1);
+				break;
+			case 88:
+				this.rotatePiece('right');
+				break;
+			case 89:
+				this.rotatePiece('left');
+				break;
+			default:
+				break;
+		}
+	};
 
 	initGame = () => {
 		this.setState({ grid: this.buildGrid() }, () => {
@@ -63,7 +88,7 @@ class App extends Component {
 		if (this.state.lvl === 1) {
 			return 1000;
 		} else if (this.state.lvl === 2) {
-			return 500;
+			return 1000;
 		}
 	};
 
