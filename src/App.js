@@ -162,7 +162,6 @@ class App extends Component {
 					if (this.state.grid[y + piece.posY][x + piece.posX] > 0) {
 						return false;
 					}
-					//console.log('here', piece.grid[y][x]);
 					coordinate.push(y + piece.posY + '-' + (x + piece.posX));
 				}
 			}

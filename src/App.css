@@ -17,3 +17,29 @@
 #grid span.first {
 	clear: both;
 }
+
+#grid span.projection:not(.color) {
+	background-color: grey;
+}
+
+.colorizedEmptyCellule-1 {
+	background-color: blue;
+}
+.colorizedEmptyCellule-2 {
+	background-color: purple;
+}
+.colorizedEmptyCellule-3 {
+	background-color: yellow;
+}
+.colorizedEmptyCellule-4 {
+	background-color: orange;
+}
+.colorizedEmptyCellule-5 {
+	background-color: pink;
+}
+.colorizedEmptyCellule-6 {
+	background-color: green;
+}
+.colorizedEmptyCellule-7 {
+	background-color: aqua;
+}
