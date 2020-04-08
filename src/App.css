@@ -1,7 +1,7 @@
-#grid {
+.grid {
 }
 
-#grid span {
+.grid span {
 	width: 30px;
 	height: 30px;
 	display: block;
@@ -9,16 +9,16 @@
 	border: 1px solid black;
 }
 
-#grid span.color {
+.grid span.color {
 	background: black;
 	color: white;
 }
 
-#grid span.first {
+.grid span.first {
 	clear: both;
 }
 
-#grid span.projection:not(.color) {
+.grid span.projection:not(.color) {
 	background-color: grey;
 }
 
@@ -42,4 +42,10 @@
 }
 .colorizedEmptyCellule-7 {
 	background-color: aqua;
+}
+
+#nextPiece {
+	position: absolute;
+	right: 900px;
+	top: 100px;
 }

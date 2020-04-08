@@ -5,10 +5,10 @@ function Grid({ grid, piece }) {
 	grid = colorEmptyCellule(grid);
 	let projectionCoordinate = [];
 	if (piece) {
-		projectionCoordinate = getProjectionCoordinate(grid, piece, grid.length - 1);
+		projectionCoordinate = getProjectionCoordinate(grid, piece);
 	}
 	return (
-		<div id="grid">
+		<div id="grid" className="grid">
 			{grid.map((line, y) => {
 				return line.map((col, x) => {
 					let classes = [];
@@ -59,23 +59,24 @@ function colorEmptyCellule(grid) {
 	return grid;
 }
 
-function getProjectionCoordinate(grid, piece, virtualY) {
+function getProjectionCoordinate(grid, piece) {
 	let coordinate = [];
-	for (let y = 0; y < piece.grid.length; y++) {
-		for (let x = 0; x < piece.grid[0].length; x++) {
-			if (piece.grid[y][x] > 0) {
-				if (grid[y + virtualY] === undefined) {
-					virtualY--;
+	let previousCoordinate = [];
 
-					return getProjectionCoordinate(grid, piece, virtualY);
+	for (let virtualY = piece.posY; virtualY < grid.length; virtualY++) {
+		previousCoordinate = coordinate;
+		coordinate = [];
+		for (let y = 0; y < piece.grid.length; y++) {
+			for (let x = 0; x < piece.grid[0].length; x++) {
+				if (piece.grid[y][x] > 0) {
+					if (grid[y + virtualY] === undefined) {
+						return previousCoordinate; //out of range Y
+					}
+					if (grid[y + virtualY][x + piece.posX] > 0) {
+						return previousCoordinate;
+					}
+					coordinate.push(y + virtualY + '-' + (x + piece.posX));
 				}
-				if (grid[y + virtualY][x + piece.posX] > 0) {
-					virtualY--;
-
-					return getProjectionCoordinate(grid, piece, virtualY);
-				}
-
-				coordinate.push(y + virtualY + '-' + (x + piece.posX));
 			}
 		}
 	}

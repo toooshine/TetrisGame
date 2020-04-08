@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import Grid from './Grid';
 import PieceCollection from './PieceCollection';
+import NextPiece from './NextPiece';
 import './App.css';
 
 class App extends Component {
@@ -10,7 +11,8 @@ class App extends Component {
 		gridWidth: 8,
 		piece: null,
 		nbrCleanLine: 0,
-		lvl: 1
+		lvl: 1,
+		nextPieceIndex: null
 	};
 
 	componentDidMount() {
@@ -65,7 +67,7 @@ class App extends Component {
 	};
 
 	initGame = () => {
-		this.setState({ grid: this.buildGrid() }, () => {
+		this.setState({ grid: this.buildGrid(), nextPieceIndex: this.generateNextPieceIndex() }, () => {
 			this.generatePiece();
 			this.launchTimer();
 		});
@@ -128,10 +130,14 @@ class App extends Component {
 		});
 	};
 
+	generateNextPieceIndex() {
+		return Math.floor(Math.random() * PieceCollection.length);
+	}
+
 	generatePiece = () => {
 		let piece = {};
 		piece.posY = 0;
-		let indexPieceCollection = Math.floor(Math.random() * PieceCollection.length);
+		let indexPieceCollection = this.state.nextPieceIndex;
 		piece.grid = PieceCollection[indexPieceCollection];
 		piece.posX = Math.floor((this.state.gridWidth - piece.grid[0].length) / 2);
 		if (piece.grid[0][0] === 0) {
@@ -142,7 +148,7 @@ class App extends Component {
 		let coordinate = this.pieceCanBeMove(piece);
 		if (coordinate !== false) {
 			piece.mergeData = coordinate;
-			this.setState({ piece });
+			this.setState({ piece, nextPieceIndex: this.generateNextPieceIndex() });
 		} else {
 			this.closeGame();
 		}
@@ -286,6 +292,8 @@ class App extends Component {
 				<h1>Tetris</h1>
 				<p className="score">{this.state.nbrCleanLine}</p>
 				<p className="lvl">Lvl {this.state.lvl}</p>
+				<p>Next Piece</p>
+				{this.state.nextPieceIndex !== null && <NextPiece grid={PieceCollection[this.state.nextPieceIndex]} />}
 				{this.state.grid !== null && <Grid grid={this.state.grid} piece={this.state.piece} />}
 			</div>
 		);
