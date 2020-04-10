@@ -1,4 +1,39 @@
 .grid {
+	/* 
+	mauve foncé 18131d 
+	mauve neutre 4f445a
+	mauve clair 7d7883
+*/
+}
+
+body {
+	background: #18131d;
+}
+
+#wrapper_tetris {
+	text-align: center;
+	padding-top: 150px;
+}
+
+h1 {
+	color: #4f445a;
+	text-transform: uppercase;
+	font-weight: bold;
+	font-size: 100px;
+	display: inline-block;
+	margin: 0;
+}
+#menu button {
+	background: #7d7883;
+	border: 0;
+	color: #18131d;
+	font-weight: bold;
+	width: 330px;
+	padding: 10px 0;
+	text-transform: uppercase;
+	display: block;
+	margin: 0 auto 10px auto;
+	font-size: 30px;
 }
 
 .grid span {
@@ -46,6 +81,6 @@
 
 #nextPiece {
 	position: absolute;
-	right: 900px;
+	right: 100px;
 	top: 100px;
 }
