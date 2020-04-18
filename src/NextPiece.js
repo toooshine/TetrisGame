@@ -1,31 +1,24 @@
 import React from 'react';
-import './App.css';
 
-function NextPiece({ grid }) {
+function NextPiece({ grid, color }) {
 	return (
-		<div id="nextPiece" className="grid">
-			{grid.map((line, y) => {
-				return line.map((col, x) => {
-					let classes = [];
-					let value = 0;
-					if (x === 0) {
-						classes.push('first');
-					}
-					if (grid[y][x] < 0) {
-						classes.push('colorizedEmptyCellule' + grid[y][x]);
-						grid[y][x] = 0;
-					}
-					if (grid[y][x] > 0) {
-						classes.push('color');
-						value = grid[y][x];
-					}
-					return (
-						<span key={x + '-' + y} className={classes.join(' ')}>
-							{value}
-						</span>
-					);
-				});
-			})}
+		<div id="wrapper-next-piece">
+			<span className="title">NEXT PIECE</span>
+			<div id="next-piece" className="grid">
+				{grid.map((line, y) => {
+					return line.map((col, x) => {
+						let classes = [];
+						let value = 0;
+						if (x === 0) {
+							classes.push('first');
+						}
+						if (grid[y][x] > 0) {
+							classes.push('color-' + color);
+						}
+						return <span key={x + '-' + y} className={classes.join(' ')} />;
+					});
+				})}
+			</div>
 		</div>
 	);
 }

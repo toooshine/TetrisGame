@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import Menu from './Menu';
 import Game from './Game';
 import Options from './Options';
-import './App.css';
+import './App.scss';
 
 class App extends Component {
 	state = {

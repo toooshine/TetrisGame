@@ -1,5 +1,4 @@
 import React from 'react';
-import './App.css';
 
 function Menu({ actions }) {
 	console.log(actions);

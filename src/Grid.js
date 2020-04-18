@@ -1,5 +1,4 @@
 import React from 'react';
-import './App.css';
 
 function Grid({ grid, piece }) {
 	grid = colorEmptyCellule(grid);
@@ -18,8 +17,7 @@ function Grid({ grid, piece }) {
 					}
 					if (piece !== null) {
 						if (piece.mergeData.indexOf(y + '-' + x) !== -1) {
-							classes.push('color');
-							value = piece.color;
+							classes.push('color-' + piece.color);
 						}
 					}
 					if (grid[y][x] < 0) {
@@ -31,14 +29,9 @@ function Grid({ grid, piece }) {
 						classes.push('projection');
 					}
 					if (grid[y][x] > 0) {
-						classes.push('color');
-						value = grid[y][x];
+						classes.push('color-' + grid[y][x]);
 					}
-					return (
-						<span key={x + '-' + y} className={classes.join(' ')}>
-							{value}
-						</span>
-					);
+					return <span key={x + '-' + y} className={classes.join(' ')} />;
 				});
 			})}
 		</div>

@@ -2,13 +2,15 @@ import React, { Component } from 'react';
 import Grid from './Grid';
 import PieceCollection from './PieceCollection';
 import NextPiece from './NextPiece';
-import './App.css';
+
+import LevelAndLine from './LevelAndLine';
+import TimeAndScore from './TimeAndScore';
 
 class Game extends Component {
 	state = {
 		grid: null,
-		gridHeight: 12,
-		gridWidth: 8,
+		gridHeight: 20,
+		gridWidth: 10,
 		piece: null,
 		nbrCleanLine: 0,
 		lvl: 1,
@@ -289,15 +291,19 @@ class Game extends Component {
 
 	render() {
 		return (
-			<div id="wrapper_tetris">
-				<p className="score">{this.state.nbrCleanLine}</p>
-				<p className="lvl">Lvl {this.state.lvl}</p>
-				<p>Next Piece</p>
-				{this.state.nextPieceIndex !== null && <NextPiece grid={PieceCollection[this.state.nextPieceIndex]} />}
+			<div id="wrapper_grid">
+				<LevelAndLine lvl={this.state.lvl} line={this.state.nbrCleanLine} />
+				{this.state.nextPieceIndex !== null && (
+					<NextPiece
+						grid={PieceCollection[this.state.nextPieceIndex]}
+						color={this.state.nextPieceIndex + 1}
+					/>
+				)}
 				{this.state.grid !== null && <Grid grid={this.state.grid} piece={this.state.piece} />}
 				{this.state.isLostGame === true && (
 					<button onClick={() => this.props.actions.launchMenu()}>Back</button>
 				)}
+				<TimeAndScore />
 			</div>
 		);
 	}
