@@ -1,9 +1,10 @@
 import React from 'react';
 
-function Grid({ grid, piece }) {
+function Grid({ grid, piece, projection }) {
 	grid = colorEmptyCellule(grid);
+
 	let projectionCoordinate = [];
-	if (piece) {
+	if (piece && projection) {
 		projectionCoordinate = getProjectionCoordinate(grid, piece);
 	}
 	return (
@@ -11,7 +12,6 @@ function Grid({ grid, piece }) {
 			{grid.map((line, y) => {
 				return line.map((col, x) => {
 					let classes = [];
-					let value = 0;
 					if (x === 0) {
 						classes.push('first');
 					}

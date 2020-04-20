@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import Grid from './Grid';
 import PieceCollection from './PieceCollection';
 import NextPiece from './NextPiece';
+import TouchAndHelpers from './TouchAndHelpers';
 
 import LevelAndLine from './LevelAndLine';
 import TimeAndScore from './TimeAndScore';
@@ -15,53 +16,42 @@ class Game extends Component {
 		nbrCleanLine: 0,
 		lvl: 1,
 		nextPieceIndex: null,
-		isLostGame: false
+		isLostGame: false,
+		options: {},
+		score: 0,
+		linePerLvl: 5
 	};
 
 	componentDidMount() {
-		this.initGame();
-		let key_pressed = [];
-		let multiple_keys_pressed = false;
-		window.addEventListener('keyup', (e) => {
-			multiple_keys_pressed = false;
-			let index = key_pressed.indexOf(e.keyCode);
-			if (index !== -1) {
-				key_pressed.splice(index, 1);
-			}
+		let options = JSON.parse(localStorage.getItem('tetris_options'));
+		if (options === null || options === '') {
+			options = TouchAndHelpers;
+		}
+		this.setState({ options }, () => {
+			this.initGame();
 		});
-		window.addEventListener('keydown', (e) => {
-			if (key_pressed.indexOf(e.keyCode) === -1) {
-				key_pressed.push(e.keyCode);
-			}
-			if (key_pressed.length > 1) {
-				key_pressed.forEach((keyCode, index) => {
-					if (multiple_keys_pressed === false && index === 0) {
-						multiple_keys_pressed = true;
-					} else {
-						this.executeKeyCode(keyCode);
-					}
-				});
-			} else {
-				this.executeKeyCode(key_pressed[0]);
-			}
-		});
+	}
+
+	componentWillUnmount() {
+		window.removeEventListener('keyup', this.keyupActions);
+		window.removeEventListener('keydown', this.keydownActions);
 	}
 
 	executeKeyCode = (keyCode) => {
 		switch (keyCode) {
-			case 39:
+			case this.state.options.touch['right']:
 				this.pieceMoveToAxis(1);
 				break;
-			case 37:
+			case this.state.options.touch['left']:
 				this.pieceMoveToAxis(-1);
 				break;
-			case 40:
+			case this.state.options.touch['bottom']:
 				this.pieceMoveToYAxis(1);
 				break;
-			case 88:
+			case this.state.options.touch['rotateRight']:
 				this.rotatePiece('right');
 				break;
-			case 89:
+			case this.state.options.touch['rotateLeft']:
 				this.rotatePiece('left');
 				break;
 			default:
@@ -69,11 +59,56 @@ class Game extends Component {
 		}
 	};
 
+	keyupActions = (e) => {
+		this.multiple_keys_pressed = false;
+		let index = this.key_pressed.indexOf(e.keyCode);
+		if (index !== -1) {
+			this.key_pressed.splice(index, 1);
+		}
+	};
+
+	keydownActions = (e) => {
+		if (this.key_pressed.indexOf(e.keyCode) === -1) {
+			this.key_pressed.push(e.keyCode);
+		}
+		if (this.key_pressed.length > 1) {
+			this.key_pressed.forEach((keyCode, index) => {
+				if (this.multiple_keys_pressed === false && index === 0) {
+					this.multiple_keys_pressed = true;
+				} else {
+					this.executeKeyCode(keyCode);
+				}
+			});
+		} else {
+			this.executeKeyCode(this.key_pressed[0]);
+		}
+	};
+
 	initGame = () => {
-		this.setState({ grid: this.buildGrid(), nextPieceIndex: this.generateNextPieceIndex() }, () => {
-			this.generatePiece();
-			this.launchTimer();
-		});
+		this.baseIntervalTimer = 1000;
+		this.globalTimer = 0;
+
+		setInterval(() => {
+			this.globalTimer++;
+		}, 1000);
+
+		this.key_pressed = [];
+		this.multiple_keys_pressed = false;
+		window.addEventListener('keyup', this.keyupActions);
+		window.addEventListener('keydown', this.keydownActions);
+		this.setState(
+			{
+				grid: this.buildGrid(),
+				nextPieceIndex: this.generateNextPieceIndex(),
+				nbrCleanLine: 0,
+				lvl: 1,
+				isLostGame: false
+			},
+			() => {
+				this.generatePiece();
+				this.launchTimer();
+			}
+		);
 		this.buildGrid();
 	};
 
@@ -81,6 +116,8 @@ class Game extends Component {
 		//Mettre fin au jeu
 		clearInterval(this.timer);
 		this.setState({ isLostGame: true });
+		window.removeEventListener('keyup', this.keyupActions);
+		window.removeEventListener('keydown', this.keydownActions);
 	};
 
 	//Timer Fonction
@@ -91,11 +128,8 @@ class Game extends Component {
 	};
 
 	convertLvlToTime = () => {
-		if (this.state.lvl === 1) {
-			return 1000;
-		} else if (this.state.lvl === 2) {
-			return 1000;
-		}
+		let interval = this.baseIntervalTimer - (this.state.lvl - 1) * 35;
+		return interval < 100 ? 100 : interval;
 	};
 
 	buildGrid = () => {
@@ -111,6 +145,7 @@ class Game extends Component {
 	};
 
 	mergePieceToGrid = () => {
+		let score = this.state.score;
 		let lvl = this.state.lvl;
 		let lvlChanged = false;
 		const virtualGrid = this.state.grid;
@@ -121,12 +156,20 @@ class Game extends Component {
 		let nbrCleanLine = this.state.nbrCleanLine;
 		let { cleanGrid, nbrLineCompleted } = this.cleanGrid(virtualGrid);
 		nbrCleanLine += nbrLineCompleted;
-		if (nbrCleanLine > 1) {
-			lvl = 2;
-			clearInterval(this.timer);
-			lvlChanged = true;
+
+		if (nbrLineCompleted > 0) {
+			//update score
+			score += parseInt(Math.pow(nbrLineCompleted, 2) * lvl * this.convertLvlToTime());
+
+			//changement of level
+			if (nbrCleanLine >= this.state.linePerLvl) {
+				nbrCleanLine = 0;
+				lvl++;
+				lvlChanged = true;
+				clearInterval(this.timer);
+			}
 		}
-		this.setState({ grid: cleanGrid, piece: null, nbrCleanLine: nbrCleanLine, lvl }, () => {
+		this.setState({ grid: cleanGrid, piece: null, nbrCleanLine: nbrCleanLine, lvl, score }, () => {
 			this.generatePiece();
 			if (lvlChanged) {
 				this.launchTimer();
@@ -290,20 +333,39 @@ class Game extends Component {
 	};
 
 	render() {
+		if (this.state.isLostGame) {
+			return (
+				<div id="wrapper_lost_game">
+					<h2>Game Over</h2>
+					<p className="score">Score : {this.state.score}</p>
+					<div id="menu">
+						<button onClick={() => this.props.actions.launchMenu()}>Back</button>
+						<button onClick={() => this.initGame()}>Play again</button>
+					</div>
+				</div>
+			);
+		}
+
 		return (
 			<div id="wrapper_grid">
-				<LevelAndLine lvl={this.state.lvl} line={this.state.nbrCleanLine} />
+				<LevelAndLine lvl={this.state.lvl} line={this.state.nbrCleanLine} linePerLvl={this.state.linePerLvl} />
 				{this.state.nextPieceIndex !== null && (
 					<NextPiece
 						grid={PieceCollection[this.state.nextPieceIndex]}
 						color={this.state.nextPieceIndex + 1}
 					/>
 				)}
-				{this.state.grid !== null && <Grid grid={this.state.grid} piece={this.state.piece} />}
+				{this.state.grid !== null && (
+					<Grid
+						grid={this.state.grid}
+						piece={this.state.piece}
+						projection={this.state.options.helpers['projection']}
+					/>
+				)}
 				{this.state.isLostGame === true && (
 					<button onClick={() => this.props.actions.launchMenu()}>Back</button>
 				)}
-				<TimeAndScore />
+				<TimeAndScore score={this.state.score} globalTimer={this.globalTimer} />
 			</div>
 		);
 	}

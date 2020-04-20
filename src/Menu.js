@@ -1,7 +1,6 @@
 import React from 'react';
 
 function Menu({ actions }) {
-	console.log(actions);
 	return (
 		<div id="menu">
 			<h1>Tetris</h1>

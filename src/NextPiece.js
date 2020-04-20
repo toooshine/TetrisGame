@@ -8,7 +8,6 @@ function NextPiece({ grid, color }) {
 				{grid.map((line, y) => {
 					return line.map((col, x) => {
 						let classes = [];
-						let value = 0;
 						if (x === 0) {
 							classes.push('first');
 						}

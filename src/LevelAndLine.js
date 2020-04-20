@@ -1,6 +1,6 @@
 import React from 'react';
 
-function LevelAndLine({ lvl, line }) {
+function LevelAndLine({ lvl, line, linePerLvl }) {
 	return (
 		<div id="level_and_line" className="ui-text">
 			<div className="lvl">
@@ -9,7 +9,9 @@ function LevelAndLine({ lvl, line }) {
 			</div>
 			<div className="score">
 				<span className="title">LINE</span>
-				<span className="value">{line}/20</span>
+				<span className="value">
+					{line}/{linePerLvl}
+				</span>
 			</div>
 		</div>
 	);
